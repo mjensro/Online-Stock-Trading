@@ -7,18 +7,19 @@
 
 import socket
 import sys
+import threading
+import sqlite3
 from _thread import *
 
-#if __name__ == "__main__":
-
-ip = "127.0.0.1"
-port = 7399
+ip = ""
+SERVER_PORT = 7399
 server = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
-
+db = sqlite3.connect("tables.sqlite",check_same_thread=False) #connection to SQLlite tables
+dbActivity = db.cursor()
 
 try:
     #bind socket to a port on the server (local host)
-    server.bind((ip,port))
+    server.bind((ip,SERVER_PORT))
 except socket.error as e:
     print(str(e))
 
@@ -27,7 +28,6 @@ except socket.error as e:
 #queue is full they will be denied
 server.listen(1)
 
-print('Waiting for connection...')
 
 while True: #starting new thread
     #accepts new connection
@@ -53,5 +53,33 @@ while True: #starting new thread
       #end connection and terminate
       conn.close()
 
+    elif (data == "BALANCE"):#display the USD balance for user 1
+        activeUser = dbActivity.execute("SELECT first_name, last_name, usd_balance FROM Users WHERE user_name = 'user1'") #Selecting all information regarding user1 from Users table
 
-    #conn.close()
+        if activeUser.fetchone() is None: #if there are no users within database
+            dbActivity.execute("INSERT INTO USERS(email, first_name,last_name,user_name,password,usd_balance) VALUES('user1@gmail.com', 'User', '1', 'user1','user01',100)")
+            db.commit() #accepting changes made to database
+
+        balanceMessage = "\nBalance for " + activeUser[0] + " " + activeUser[1] + ": $" + str[activeUser[2]] #displays users first and last name and balance amount
+        conn.send(balanceMessage.encode())
+
+    elif (data == "LIST"):#List all records in the Stocks table/file
+        stockActivity = dbActivity.execute("SELECT usd_balance FROM USERS WHERE ID = 1") #Finding user 1
+
+        if stockActivity.fetchone() is None: #if there are no current stock records within database
+            dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(2, 'TSLA', 'Tesla', '50','user1')")
+            db.commit()
+        
+        listMessage = "\nComplete list of records within the Stocks Table:"
+        stockActivity = dbActivity.execute("Select ID, stock_symbol, stock_name, stock_balance, user_id from Stocks")
+        stocks = stockActivity.fetchone()
+
+        conn.send(listMessage.encode())
+
+        while stocks is not None:
+            listMessage += "\n" + str(stocks[0]) + " " + stocks[1] + " " + str(stocks[2])
+
+    conn.close()
+
+
+#if __name__ == '__main__':
