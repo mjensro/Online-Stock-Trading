@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS Users
+(
+ID INTEGER PRIMARY KEY AUTOINCREMENT, 
+first_name TEXT,
+last_name TEXT,
+user_name TEXT NOT NULL,
+password TEXT,         
+usd_balance DOUBLE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Stocks
+(
+ID INTEGER PRIMARY KEYAUTOINCREMENT,
+
+stock_symbol varchar(4) NOT NULL,
+stock_name varchar(20) NOT NULL,
+stock_balance DOUBLE,
+user_id TEXT,        
+FOREIGN KEY (user_id) REFERENCES Users (ID)           
+);
+
+ 
