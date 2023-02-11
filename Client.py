@@ -11,8 +11,29 @@ import sys
 
 ip = ''
 port = 7399 #last 4 digits of id for unique port
-server = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
-server.connect((ip,port))
+client_server = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
+client_server.connect((ip,port))
 
+#takes input
+message = input("client:  ")
+
+#Client chooses/inputs the SHUTDOWN command
+if message == 'SHUTDOWN\n':
+    #send message to server
+    client_server.send(message.encode())
+    
+    #recieve response
+    data = client_server.recv(2048).decode() 
+     
+    #Prints message recived from the server "200 OK"
+    print(data)
+    
+    #return the string "200 OK"
+    #reply = '200 OK'
+    #print("client: " , reply)
+
+    #end connection and terminate
+    #client_server.close()
+    
 
 #if __name__ == "__main__":
