@@ -15,31 +15,43 @@ ip = "127.0.0.1"
 port = 7399
 server = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
 
+
 try:
-    server.bind((ip,port)) 
+    #bind socket to a port on the server (local host)
+    server.bind((ip,port))
 except socket.error as e:
     print(str(e))
 
-server.listen(5)
+
+#The queue of 1 for the server, if someone attempts to connect while
+#queue is full they will be denied
+server.listen(1)
+
 print('Waiting for connection...')
 
-def threaded_client(conn):
-    conn.send(str.encode('Welcome, type your info\n'))
-
-    while True: #keeps thread active as long as the user doesn't exit
-        data = conn.recv(2048) #buffer rate
-        reply = 'Server output: '+ data.decode('utf-8')
-        if not data:
-            break
-        conn.sendall(str.encode(reply))
-    conn.close()
-
 while True: #starting new thread
+    #accepts new connection
     conn, addr = server.accept()
     print('connected to: '+addr[0]+':'+str(addr[1]))
-    
-    start_new_thread(threaded_client,(conn,))
-#client, address = server.accept()
-#print(f"Connection Established -  {address[0]}:{address[1]}")
 
-#print("Client Disconnected")
+    #conn.send('Welcome, type your info\n'.encode())
+
+    #recieves data stream and won't except data packet greater than 2048 bytes
+    data = conn.recv(2048) #buffer rate
+
+    if not data:
+        #if data is not recieved
+        break
+
+    #prints what the client sent to the server
+    print("Recieved: ", + str(data))
+
+    if(data == "SHUTDOWN\n"):
+      reply = 'server: '+ data.decode('200 OK')
+      #sends data to the client
+      conn.sendall(str.encode(reply))
+      #end connection and terminate
+      conn.close()
+
+
+    #conn.close()
