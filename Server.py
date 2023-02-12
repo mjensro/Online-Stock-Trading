@@ -51,7 +51,7 @@ stockRecord = dbActivity.execute("SELECT ID FROM Stocks WHERE ID = 1") #checks i
 if stockRecord.fetchone() is None:
     dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(1, 'TSLA', 'Tesla', '50.00','user1')")
     dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(2, 'AMZN', 'Amazon', '100.00','user1')")
-    dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(3, 'MSFT', 'Microsoft', 250.00','user1')")
+    dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(3, 'MSFT', 'Microsoft', '250.00','user1')")
     db.commit()
 try:
     #bind socket to a port on the s (local host)
@@ -96,7 +96,6 @@ while True: #starting new thread
             conn.close()
             sys.exit()
 
-    
         elif (data == "BALANCE"):#display the USD balance for user 1
             activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE ID = 1") #Selecting all information regarding user1 from Users table
             activeUser = activeUserCheck.fetchone()
@@ -106,8 +105,10 @@ while True: #starting new thread
         elif (data == "LIST"):#List all records in the Stocks table/file
             stockActivity = dbActivity.execute("SELECT * FROM Stocks") #Finding all stock infromation within stock table
             stocks = stockActivity.fetchone() #fetch stock values
+            list = "All records in the Stocks table: \n"
             while stocks is not None: #loop through all stock records within database
-                list = "All records in the Stocks table: " + str(stocks[0]) + " " +stocks[1] + " " + stocks[2] + " " + str(stocks[3]) + " " + stocks[4]
+                list += str(stocks[0]) + " " +stocks[1] + " " + stocks[2] + " " + str(stocks[3]) + " " + stocks[4] + "\n"
                 stocks = stockActivity.fetchone()
             conn.send(list.encode())
+
     conn.close()
