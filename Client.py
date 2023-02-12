@@ -13,31 +13,9 @@ from _thread import *
 
 ip = ''
 SERVER_PORT = 7399 #last 4 digits of id for unique port
-client_server = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
-client_server.connect((ip,port))
+s = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
+s.connect((ip,SERVER_PORT))
 
-"""
-#takes input
-message = input("client:  ")
-
-#Client chooses/inputs the SHUTDOWN command
-if message == 'SHUTDOWN\n':
-    #send message to server
-    client_server.send(message.encode())
-    
-    #recieve response
-    data = client_server.recv(2048).decode() 
-     
-    #Prints message recived from the server "200 OK"
-    print(data)
-    
-    #return the string "200 OK"
-    #reply = '200 OK'
-    #print("client: " , reply)
-
-    #end connection and terminate
-    #client_server.close()
-    """
 
 if __name__ == "__main__":
     ip = ""
@@ -49,24 +27,29 @@ else:
     print ("Invalid argument")
     exit()
 
-client_socket = socket.socket()
+s = socket.socket()
 
 try:
-    client_socket.connect((host,SERVER_PORT))
+    s.connect((ip,SERVER_PORT)) #changed host to ip
 except:
     print("Cannot connect to server")
     exit()
 
+
 shutDown = 0
 while shutDown == 0: #while user does not request shutdown
-    message = input("\ninput::") #accepting user input
+    message = input("input: ") #accepting user input
 
     #quit message goes here
-    
-    if len(message) > 0:
+    if message == "QUIT":
+        print("200 OK")
+        s.close()
+
+    #(message.encode()))
+    if len(str.encode(message)) > 0:
         try:
-            client_socket.send(message.encode()) #sending input to server
-            data = client_socket.recv(1024).decode() #recieve sent input
+            s.send(bytes(message, "utf-8")) #sending input to server
+            data = s.recv(1024).decode() #recieve sent input
             if data == "Shutting down server...":
                 shutDown = 1
             print("Output: " + data) #outputting response
@@ -74,4 +57,4 @@ while shutDown == 0: #while user does not request shutdown
             print("lost connection to server")
             shutDown = 1
 
-    client_socket.close() #close socket connection
+    s.close() #close socket connection
