@@ -13,8 +13,8 @@ from _thread import *
 
 ip = ''
 SERVER_PORT = 7399 #last 4 digits of id for unique port
-s = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
-s.connect((ip,SERVER_PORT))
+#s = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
+#s.connect((ip,SERVER_PORT))
 
 
 if __name__ == "__main__":
@@ -38,7 +38,7 @@ except:
 
 shutDown = 0
 while shutDown == 0: #while user does not request shutdown
-    message = input("input: ") #accepting user input
+    message = raw_input("input: ") #accepting user input
 
     #quit message goes here
     if message == "QUIT":
