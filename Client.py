@@ -11,8 +11,8 @@ import threading
 import sqlite3
 from _thread import *
 
-ip = ''
-SERVER_PORT = 7399 #last 4 digits of id for unique port
+#ip = ''
+SERVER_PORT = 7390 #last 4 digits of id for unique port
 #s = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
 #s.connect((ip,SERVER_PORT))
 
@@ -46,12 +46,10 @@ while shutDown == 0: #while user does not request shutdown
         s.close()
 
     #(message.encode()))
-    if len(str.encode(message)) > 0:
+    if len(message) > 0:
         try:
-            s.send(bytes(message, "utf-8")) #sending input to server
+            s.send(message.encode()) #sending input to server
             data = s.recv(1024).decode() #recieve sent input
-            if data == "Shutting down server...":
-                shutDown = 1
             print("Output: " + data) #outputting response
         except:
             print("lost connection to server")
