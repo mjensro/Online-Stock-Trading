@@ -7,15 +7,12 @@
 
 import socket
 import sys
-import threading
-import sqlite3
 from _thread import *
 
 #ip = ''
-SERVER_PORT = 7390 #last 4 digits of id for unique port
+SERVER_PORT = 7399 #last 4 digits of id for unique port
 #s = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
 #s.connect((ip,SERVER_PORT))
-
 
 if __name__ == "__main__":
     ip = ""
@@ -45,7 +42,6 @@ while shutDown == 0: #while user does not request shutdown
         print("200 OK")
         s.close()
 
-    #(message.encode()))
     if len(message) > 0:
         try:
             s.send(message.encode()) #sending input to server
