@@ -1,20 +1,20 @@
 #Author/Collaborators: Taylor Williams, Michelle Sroka, Alexis Whisnant
 #Creation Date: 02/03/2023
-#Last Modification Date: 02/03/2023
+#Last Modification Date: 02/12/2023
 #Purpose: This is the Server program for a Online Stock Trading System. This Server program is
 #expected to communicate with an aligining Client program using TCP sockets. One active
-#client should be allowed to connect to the s.
+#client should be allowed to connect to the server.
 
 import socket
 import sys
-import sqlite3
+import sqlite3 #only server should handle SQL statements
 from _thread import *
 
 ip = ""
-SERVER_PORT = 7399
-s = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
+SERVER_PORT = 7399 #unique port using last 4 digits of ID
+s = socket.socket (socket.AF_INET, socket.SOCK_STREAM) #Using transmission control protocol
 db = sqlite3.connect("tables") #connection to SQLlite tables
-dbActivity = db.cursor()
+dbActivity = db.cursor() #abstraction statement for data traversal
 
 #User table creation
 dbActivity.execute("""
@@ -48,7 +48,7 @@ if user.fetchone() is None: #if no records exists, it creates 1 default
     dbActivity.execute("INSERT INTO USERS(ID, first_name, last_name, user_name, password, usd_balance) VALUES(1, 'User', '01', 'user1','password',100)")
     db.commit() #add changes to database
 stockRecord = dbActivity.execute("SELECT ID FROM Stocks WHERE ID = 1") #checks if there is at least 1 stock record
-if stockRecord.fetchone() is None:
+if stockRecord.fetchone() is None: #Creates default stock records
     dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(1, 'TSLA', 'Tesla', '50.00','user1')")
     dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(2, 'AMZN', 'Amazon', '100.00','user1')")
     dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(3, 'MSFT', 'Microsoft', '250.00','user1')")
@@ -61,14 +61,13 @@ except socket.error as e:
 
 #The queue of 1 for the s, if someone attempts to connect while
 #queue is full they will be denied
+print("Awaiting client connection...")
 s.listen(1)
 
 while True: #starting new thread
     #accepts new connection
     conn, addr = s.accept()
     print('connected to: '+addr[0]+':'+str(addr[1]))
-
-    #conn.send('Welcome, type your info\n'.encode())
 
     #recieves data stream and won't except data packet greater than 2048 bytes
     #convert to string format
@@ -86,9 +85,6 @@ while True: #starting new thread
         #if invalid command format
         conn.send("403 message format error\n".encode())
 
-    #prints what the client sent to the s
-    #print("Recieved: ", + str(data))
-    
     else:
         if (data == "SHUTDOWN"):
             print("it worked")
