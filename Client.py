@@ -1,13 +1,13 @@
-#Author/Collaborators: Taylor Williams, Michelle Sroka, Alexis Whisnant
+#Author/Collaborators: Taylor Williams, Michelle Sroka
 #Creation Date: 02/03/2023
 #Last Modification Date: 02/12/2023
 #Purpose: This is the Server program for a Online Stock Trading System. This Server program is
 #expected to communicate with an aligining Client program using TCP sockets. One active
 #client should be allowed to connect to the server.
 
-import socket
-import sys
-from _thread import *
+import socket #used to connect to socket
+import sys #used to input argv statements
+from _thread import * #threading
 
 SERVER_PORT = 7399 #last 4 digits of id for unique port
 

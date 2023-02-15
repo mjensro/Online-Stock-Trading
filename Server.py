@@ -1,4 +1,4 @@
-#Author/Collaborators: Taylor Williams, Michelle Sroka, Alexis Whisnant
+#Author/Collaborators: Taylor Williams, Michelle Sroka
 #Creation Date: 02/03/2023
 #Last Modification Date: 02/12/2023
 #Purpose: This is the Server program for a Online Stock Trading System. This Server program is
@@ -106,5 +106,19 @@ while True: #starting new thread
                 list += str(stocks[0]) + " " +stocks[1] + " " + stocks[2] + " " + str(stocks[3]) + " " + stocks[4] + "\n"
                 stocks = stockActivity.fetchone()
             conn.send(list.encode())
+
+        #elif (data == "BUY"):
+            #have user enter the stock_symbol, stock_name, and the stock_balance amount they wish to purchase
+            #check if users usd_balance within Users table is enough to purchase stock amount
+            #subtract usd_balance by buy amount as long as user will not have negative funds remaining
+            #update stock table with new stock_symbol, stock_name
+            #return new usd_balance
+    
+        #elif (data == "SELL"):
+            #have user enter the stock_name, and the stock_balance they wish to sell
+            #verify user has the stock_name already purchased
+            #add stock_balance to users usd_balance, update usd_balance
+            #update Stock table with removed stock record
+            #return new usd_balance
 
     conn.close()
