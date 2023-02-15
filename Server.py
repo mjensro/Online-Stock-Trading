@@ -93,7 +93,7 @@ while True: #starting new thread
             sys.exit()
 
         elif (data == "BALANCE"):#display the USD balance for user 1
-            activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE ID = 1") #Selecting all information regarding user1 from Users table
+            activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE user_name = 'user1'") #Selecting all information regarding user1 from Users table
             activeUser = activeUserCheck.fetchone()
             balanceMessage = "\nBalance for " + activeUser[1] + " " + activeUser[2] + ": $" + str(activeUser[5]) #displays users first and last name with their corresponding balance amount
             conn.send(balanceMessage.encode())
@@ -108,17 +108,41 @@ while True: #starting new thread
             conn.send(list.encode())
 
         #elif (data == "BUY"):
-            #have user enter the stock_symbol, stock_name, and the stock_balance amount they wish to purchase
-            #check if users usd_balance within Users table is enough to purchase stock amount
-            #subtract usd_balance by buy amount as long as user will not have negative funds remaining
-            #update stock table with new stock_symbol, stock_name
-            #return new usd_balance
-    
+            """
+            -have user enter the stock_symbol, stock_name, and the stock_balance amount they wish to purchase
+            -check if users usd_balance within Users table is enough to purchase stock amount
+            -subtract usd_balance by buy amount as long as user will not have negative funds remaining
+            -update stock table with new stock_symbol, stock_name
+            -return new usd_balance
+            """
+            """
+            stockName = input("Enter Stock Name")
+            stockSymbol = input("Enter Stock Symbol")
+            purchaseAmount = input("Enter amount to purchase:")
+            userBalance = dbActivity.execute("SELECT usd_balance FROM Users WHERE user_name = 'user1'")
+            balance = userBalance.fetchone()
+            if balance > purchaseAmount:
+                print("insufficient funds")
+            else:
+                 balance -= purchaseAmount
+            dbActivity.execute("INSERT INTO Stocks (stock_symbol, stock_name, stock_balance, user_id) VALUES ('" + stockSymbol + "','" + stockName + "','" + str(purchaseAmount) +"','user1')") 
+            """
         #elif (data == "SELL"):
-            #have user enter the stock_name, and the stock_balance they wish to sell
-            #verify user has the stock_name already purchased
-            #add stock_balance to users usd_balance, update usd_balance
-            #update Stock table with removed stock record
-            #return new usd_balance
-
+            """
+            -have user enter the stock_name, and the stock_balance they wish to sell
+            -verify user has the stock_name already purchased
+            -add stock_balance to users usd_balance, update usd_balance
+            -update Stock table with removed stock record
+            -return new usd_balance
+            """
+            """
+            stockName = input("Enter Stock Name: ")
+            stockSymbol = input("Enter Stock Symbol: ")
+            purchaseAmount = input("Enter amount to sell: ")
+            userBalance = dbActivity.execute("SELECT usd_balance FROM Users WHERE user_name = 'user1'")
+            balance = userBalance.fetchone()
+            balance += purchaseAmount
+            dbActivity.execute("UPDATE Users SET usd_balance = '" + str(balance) +"'")
+            dbActivity.execute("INSERT INTO Stocks (stock_symbol, stock_name, stock_balance, user_id) VALUES ('" + stockSymbol + "','" + stockName + "','" + str(purchaseAmount) +"','user1')") 
+                """
     conn.close()
