@@ -86,9 +86,9 @@ while True: #starting new thread
         conn.send("403 message format error\n".encode())
 
     else:
-        if (data == "SHUTDOWN"):
-            print("it worked")
-            conn.send(str.encode("200 OK"))
+        if (data == "SHUTDOWN\n"):
+            sendMessage = "200 OK"
+            conn.send(sendMessage.encode()) #send message to client
             conn.close()
             sys.exit()
 
