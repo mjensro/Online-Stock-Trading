@@ -66,46 +66,40 @@ s.listen(1)
 
 while True: #starting new thread
     #accepts new connection
-    conn, addr = s.accept()
-    print('connected to: '+addr[0]+':'+str(addr[1]))
+    connection, address = s.accept()
+    print('connected to: '+address[0]+':'+str(address[1]))
 
     #recieves data stream and won't except data packet greater than 2048 bytes
     #convert to string format
-    data = conn.recv(1024) #buffer rate
+    data = connection.recv(1024) #buffer rate
     data = data.decode("utf-8")
     print(data)
-    """
-    if not data:
-        #if data is not recieved
-        print("Data not recieved!")
-        break
 
-    """
     if len(data) == 0:
         #if invalid command format
-        conn.send("403 message format error\n".encode())
+        connection.send("403 message format error\n".encode())
 
     else:
         if (data == "SHUTDOWN"):
             sendMessage = "200 OK"
-            conn.send(sendMessage.encode()) #send message to client
-            conn.close()
+            connection.send(sendMessage.encode()) #send message to client
+            connection.close()
             sys.exit()
 
         elif (data == "BALANCE"):#display the USD balance for user 1
             activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE user_name = 'user1'") #Selecting all information regarding user1 from Users table
             activeUser = activeUserCheck.fetchone()
             balanceMessage = " 200 OK\n Balance for " + activeUser[1] + " " + activeUser[2] + ": $" + str(activeUser[5]) #displays users first and last name with their corresponding balance amount
-            conn.send(balanceMessage.encode())
+            connection.send(balanceMessage.encode())
 
         elif (data == "LIST"):#List all records in the Stocks table/file
             stockActivity = dbActivity.execute("SELECT * FROM Stocks") #Finding all stock infromation within stock table
             stocks = stockActivity.fetchone() #fetch stock values
-            list = "200 OK \n The list of records in the Crypto database for user 1: \n"
+            list = "200 OK \n The list of records in the Stocks database for user 1: \n"
             while stocks is not None: #loop through all stock records within database
                 list += str(stocks[0]) + " " +stocks[1] + " " + stocks[2] + " " + str(stocks[3]) + " " + stocks[4] + "\n"
                 stocks = stockActivity.fetchone()
-            conn.send(list.encode())
+            connection.send(list.encode())
 
         #elif (data == "BUY"):
             """
@@ -144,5 +138,5 @@ while True: #starting new thread
             balance += purchaseAmount
             dbActivity.execute("UPDATE Users SET usd_balance = '" + str(balance) +"'")
             dbActivity.execute("INSERT INTO Stocks (stock_symbol, stock_name, stock_balance, user_id) VALUES ('" + stockSymbol + "','" + stockName + "','" + str(purchaseAmount) +"','user1')") 
-                """
-    conn.close()
+            """
+    connection.close()

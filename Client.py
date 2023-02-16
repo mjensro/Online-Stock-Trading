@@ -15,8 +15,8 @@ if __name__ == "__main__":
     host = ""
     n = len(sys.argv) #intakes compiling statement as an array
     if n == 2: #if the input recieves an ip
-        print (sys.argv[1]) #print ip inputted
         host = sys.argv[1]
+        print (host) #print ip inputted
 else:
     print ("Invalid argument")
     exit()
@@ -25,7 +25,7 @@ s = socket.socket()
 
 try:
     s.connect((host,SERVER_PORT)) #connect to host given with pre-assigned port number
-    print("Commands: \nBUY \nSELL \nLIST \nBALANCE \nQUIT \nSHUTDOWN\n")
+    print("Commands: \nLIST \nBALANCE \nQUIT \nSHUTDOWN\n")
 except:
     print("Cannot connect to server")
     exit()
@@ -54,7 +54,7 @@ while shutDown == 0: #while user does not request shutdown
             data = s.recv(1024).decode() #recieve sent input
             print("Output: " + data) #outputting response
         except:
-            print("lost connection to server")
+            print("ERROR: Lost Connection")
             shutDown = 1
 
     s.close() #close socket connection
