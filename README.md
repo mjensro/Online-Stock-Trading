@@ -9,6 +9,7 @@ Group 6: Taylor Williams, Michelle Sroka
 
 
 Repository Link: https://github.com/mjensro/Online-Stock-Trading
+Youtube Video Link: https://youtu.be/zzQ6HqxIoZ8
 
 
                                     Operating Environment
