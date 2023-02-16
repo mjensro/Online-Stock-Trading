@@ -41,6 +41,14 @@ while shutDown == 0: #while user does not request shutdown
         s.close()
 
     if len(userInput) > 0:
+
+        if userInput == "SHUTDOWN":
+          s.send(userInput.encode()) #sending input to server
+          data = s.recv(1024).decode() #recieve sent input
+          print("Output: " + data) #outputting response
+          s.close()
+          sys.exit()
+
         try:
             s.send(userInput.encode()) #sending input to server
             data = s.recv(1024).decode() #recieve sent input

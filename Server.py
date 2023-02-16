@@ -86,7 +86,7 @@ while True: #starting new thread
         conn.send("403 message format error\n".encode())
 
     else:
-        if (data == "SHUTDOWN\n"):
+        if (data == "SHUTDOWN"):
             sendMessage = "200 OK"
             conn.send(sendMessage.encode()) #send message to client
             conn.close()
@@ -95,13 +95,13 @@ while True: #starting new thread
         elif (data == "BALANCE"):#display the USD balance for user 1
             activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE ID = 1") #Selecting all information regarding user1 from Users table
             activeUser = activeUserCheck.fetchone()
-            balanceMessage = "\nBalance for " + activeUser[1] + " " + activeUser[2] + ": $" + str(activeUser[5]) #displays users first and last name with their corresponding balance amount
+            balanceMessage = " 200 OK\n Balance for " + activeUser[1] + " " + activeUser[2] + ": $" + str(activeUser[5]) #displays users first and last name with their corresponding balance amount
             conn.send(balanceMessage.encode())
 
         elif (data == "LIST"):#List all records in the Stocks table/file
             stockActivity = dbActivity.execute("SELECT * FROM Stocks") #Finding all stock infromation within stock table
             stocks = stockActivity.fetchone() #fetch stock values
-            list = "All records in the Stocks table: \n"
+            list = "200 OK \n The list of records in the Crypto database for user 1: \n"
             while stocks is not None: #loop through all stock records within database
                 list += str(stocks[0]) + " " +stocks[1] + " " + stocks[2] + " " + str(stocks[3]) + " " + stocks[4] + "\n"
                 stocks = stockActivity.fetchone()
