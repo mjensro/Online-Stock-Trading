@@ -58,6 +58,6 @@ Test using LIST/BALANCE/QUIT/SHUTDOWN commands
                                          Known Bugs
 
 Displays “lost connection to server” when attempting multiple commands,
-If the user tries to attempt more than one command then the Client will print “lost connection to server”, however if the Client runs one command followed by the QUIT command then the error message will not display. To prevent this, only one command can be done at a time followed by the client quitting.
+If the user tries to attempt more than one command then the Client will print “lost connection to server”, however if the Client runs one command followed by the QUIT command then the error message will not display. To prevent this, only one command can be done at a time followed by the Client quitting.
 
 
