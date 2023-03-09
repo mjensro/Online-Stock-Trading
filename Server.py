@@ -27,6 +27,11 @@ CREATE TABLE IF NOT EXISTS Users
     password TEXT,         
     usd_balance DOUBLE NOT NULL
 );
+INSERT INTO Users (ID, first_name, last_name, user_name, password, usd_balance)
+VALUES('01','Root','User','Root','Root01',100),
+VALUES('02','Mary','User','Mary','Mary01',100),
+VALUES('03','John','User','John','John01',100),
+VALUES('04','Moe','User','Moe','Moe01',100);
 """)
 
 #Stock table creation

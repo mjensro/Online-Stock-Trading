@@ -9,6 +9,7 @@ Group 6: Taylor Williams, Michelle Sroka
 
 
 Repository Link: https://github.com/mjensro/Online-Stock-Trading
+
 Youtube Video Link: https://youtu.be/kzaX_WeE_bA
 
 
@@ -20,6 +21,20 @@ Operating system: Windows/Mac/Linux
 SSH client for Windows: https://www.bitvise.com/ssh-client-download
 
                                     Commands Implemented
+
+LOGIN- 
+
+LOGOUT-
+
+WHO-
+
+LOOKUP-
+
+DEPOSIT-
+
+BUY-
+
+SELL-
 
 LIST- by Michelle Sroka - Displays all stock records within Stocks table
 
@@ -54,8 +69,16 @@ Wait for the client to connect to server
 
 Test using LIST/BALANCE/QUIT/SHUTDOWN commands
 
+                                    Testable Users
+                                        UserID  Password 
+                        
+                                        Root    Root01 
+                                        Mary    Mary01 
+                                        John    John01 
+                                        Moe     Moe01 
 
-                                         Known Bugs
+
+                                        Known Bugs
 
 Displays “lost connection to server” when attempting multiple commands,
 If the user tries to attempt more than one command then the Client will print “lost connection to server”, however if the Client runs one command followed by the QUIT command then the error message will not display. To prevent this, only one command can be done at a time followed by the Client quitting.
