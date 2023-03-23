@@ -85,7 +85,14 @@ while True: #starting new thread
         connection.send("403 message format error\n".encode())
 
     else:
-        if (data == "SHUTDOWN"):
+        userID = dbActivity.execute("SELECT ID * FROM Users") #Finds all user ID information from user table
+        validUser = userID.fetchone() #fetch userID values
+        if (data == "LOGIN " + validUser + " "):
+
+
+
+
+        elif (data == "SHUTDOWN"):
             sendMessage = "200 OK"
             connection.send(sendMessage.encode()) #send message to client
             connection.close()
