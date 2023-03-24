@@ -20,7 +20,12 @@ if __name__ == "__main__":
     else:
         print ("Invalid argument")
 
+<<<<<<< Updated upstream
     s = socket.socket()
+=======
+
+s = socket.socket()
+>>>>>>> Stashed changes
 
     try:
         s.connect((host,SERVER_PORT)) #connect to host given with pre-assigned port number
@@ -48,6 +53,7 @@ if __name__ == "__main__":
                 print("ERROR: Lost Connection")
                 shutDown = 1
 
+<<<<<<< Updated upstream
             if userInput == "SHUTDOWN":
                 s.send(userInput.encode()) #sending input to server
                 data = s.recv(1024).decode() #recieve sent input
@@ -56,3 +62,19 @@ if __name__ == "__main__":
                 sys.exit()
 
         s.close() #close socket connection
+=======
+        try:
+            s.send(userInput.encode()) #sending input to server
+            data = s.recv(1024).decode() #recieve sent input
+            print("Output: " + data) #outputting response
+            
+        except:
+            print("ERROR: Lost Connection")
+            shutDown = 1
+    
+    else:
+        print("Input handling went wrong! try restart client connection!")
+        
+
+s.close() #close socket connection
+>>>>>>> Stashed changes
