@@ -10,7 +10,7 @@ Group 6: Taylor Williams, Michelle Sroka
 
 Repository Link: https://github.com/mjensro/Online-Stock-Trading
 
-Youtube Video Link: https://youtu.be/kzaX_WeE_bA
+Youtube Video Link:
 
 
                                     Operating Environment
@@ -32,9 +32,13 @@ LOOKUP-
 
 DEPOSIT-
 
-BUY-
+BUY- by Michelle Sroka - Buy an amount of stocks. A client sends the ASCII string “BUY” followed by a space, followed by a stock_symbol, followed by a space, followed by a stock_amount, followed by
+a space, followed by the price per stock, followed by a User_ID, and followed by the
+newline character (i.e., '\n')
 
-SELL-
+SELL- by Michelle Sroka - SELL an amount of stock. A client sends the ASCII string “BUY” followed by a space,followed by a stock_symbol, followed by a space, followed by stock price, followed by a
+space, followed by a stock_amount, followed by a space, followed by a User_ID, and
+followed by the newline character (i.e., '\n').
 
 LIST- by Michelle Sroka - Displays all stock records within Stocks table
 
@@ -70,14 +74,13 @@ Wait for the client to connect to server
 Test using LIST/BALANCE/QUIT/SHUTDOWN commands
 
                                     Testable Users
-                                        UserID  Password 
+                                        UserID | Password 
                         
-                                        Root    Root01 
-                                        Mary    Mary01 
-                                        John    John01 
-                                        Moe     Moe01 
-
-
+                                        Root   |  Root01 
+                                        Mary   |  Mary01 
+                                        John   |  John01 
+                                        Moe    |  Moe01 
+⠀
                                         Known Bugs
 
 Displays “lost connection to server” when attempting multiple commands,
