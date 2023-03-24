@@ -109,7 +109,7 @@ while True: #starting new thread client connection
             print_lock.acquire()
         
             if (data == "SHUTDOWN"):
-                    activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE user_name = 'user1'") #gets root user's information
+                    activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE user_name = 'Root'") #gets root user's information
                     activeUser = activeUserCheck.fetchone()
                     rootUser = activeUser[0]
 
@@ -124,7 +124,7 @@ while True: #starting new thread client connection
                         connection.send("Only root user is authorized to SHUTDOWN! Denied!".encode())
 
             elif (data == "BALANCE"):#display the USD balance for user 1
-                    activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE user_name = 'user1'") #Selecting all information regarding user1 from Users table
+                    activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE user_name = 'Root'") #Selecting all information regarding user1 from Users table
                     activeUser = activeUserCheck.fetchone()
                     balanceMessage = " 200 OK\n Balance for " + activeUser[1] + " " + activeUser[2] + ": $" + str(activeUser[5]) #displays users first and last name with their corresponding balance amount
                     connection.send(balanceMessage.encode())
