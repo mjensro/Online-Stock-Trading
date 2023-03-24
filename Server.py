@@ -87,14 +87,13 @@ while True: #starting new thread client connection
         connection.send("403 message format error\n".encode())
         print_lock.release()
         connection.close()
-
-    userID = dbActivity.execute("SELECT * FROM Users WHERE ID = 01 OR 02 OR 03 OR 04") #Finds all user ID information from users table
+                                     
+    userID = dbActivity.execute("SELECT ID FROM Users") #Finds all user ID information from users table
     validUser = userID.fetchone() #fetch userID values
 
-    userPassword = dbActivity.execute("SELECT * FROM Users WHERE password = 'password' OR 'Mary01' OR 'John01' OR 'Moe01'") #Finds all user password information from users table
+    userPassword = dbActivity.execute("SELECT password FROM Users ") #Finds all user password information from users table
     validPassword = dbActivity.fetchone()#fetch user password values
-
-
+    
     if (data ==  "LOGIN" + " " + int(validUser) + " " + str(validPassword)):  #for when the user's input is acccurate 
         loginMessage = "200 OK"
         connection.send(loginMessage.encode()) 
@@ -102,12 +101,21 @@ while True: #starting new thread client connection
         while True: #starting new thread for client
             #lock acquired by client
             print_lock.acquire()
-                     
+        
             if (data == "SHUTDOWN"):
-                    sendMessage = "200 OK"
-                    connection.send(sendMessage.encode()) #send message to client
-                    connection.close()
-                    sys.exit()
+                    activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE user_name = 'user1'") #gets root user's information
+                    activeUser = activeUserCheck.fetchone()
+                    rootUser = activeUser[0]
+
+                    #if the active user is the Root user allow for shutdown
+                    if (validUser == rootUser):
+                        sendMessage = "200 OK"
+                        connection.send(sendMessage.encode()) #send message to client
+                        connection.close()
+                        sys.exit()
+                    
+                    else:
+                        connection.send("Only root user is authorized to SHUTDOWN! Denied!".encode())
 
             elif (data == "BALANCE"):#display the USD balance for user 1
                     activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE user_name = 'user1'") #Selecting all information regarding user1 from Users table
@@ -167,7 +175,9 @@ while True: #starting new thread client connection
         connection.send("403 Wrong UserID or Password".encode())
         #print_lock.release()
 
-                      
+    if (data == "SHUTDOWN"): #if user tries to enter shutdown without being logged in
+        connection.send("Only root user is authorized to SHUTDOWN! Denied!".encode()) 
+
     connection.close()
 
            
