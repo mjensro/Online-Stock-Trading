@@ -48,10 +48,10 @@ CREATE TABLE IF NOT EXISTS Stocks
 
 user = dbActivity.execute("SELECT ID FROM Users WHERE ID = 1") #checks if there is at least 1 user record
 if user.fetchone() is None: #if no records exists, it creates 1 default
-    dbActivity.execute("INSERT INTO USERS(ID, first_name, last_name, user_name, password, usd_balance) VALUES(01, 'User', 'Root', 'user1','password',100.00)")
-    dbActivity.execute("INSERT INTO USERS(ID, first_name, last_name, user_name, password, usd_balance) VALUES(02,'Mary','User','Mary','Mary01',100.00)")
-    dbActivity.execute("INSERT INTO USERS(ID, first_name, last_name, user_name, password, usd_balance) VALUES(03,'John','User','John','John01',100.00)")
-    dbActivity.execute("INSERT INTO USERS(ID, first_name, last_name, user_name, password, usd_balance) VALUES(04,'Moe','User','Moe','Moe01',100.00)")
+    dbActivity.execute("INSERT INTO USERS(ID, first_name, last_name, user_name, password, usd_balance) VALUES(1, 'User', 'Root', 'user1','password',100.00)")
+    dbActivity.execute("INSERT INTO USERS(ID, first_name, last_name, user_name, password, usd_balance) VALUES(2,'Mary','User','Mary','Mary01',100.00)")
+    dbActivity.execute("INSERT INTO USERS(ID, first_name, last_name, user_name, password, usd_balance) VALUES(3,'John','User','John','John01',100.00)")
+    dbActivity.execute("INSERT INTO USERS(ID, first_name, last_name, user_name, password, usd_balance) VALUES(4,'Moe','User','Moe','Moe01',100.00)")
     db.commit() #add changes to database
 stockRecord = dbActivity.execute("SELECT ID FROM Stocks WHERE ID = 1") #checks if there is at least 1 stock record
 if stockRecord.fetchone() is None: #Creates default stock records
@@ -88,13 +88,15 @@ while True: #starting new thread client connection
         print_lock.release()
         connection.close()
                                      
-    userID = dbActivity.execute("SELECT ID FROM Users") #Finds all user ID information from users table
-    validUser = userID.fetchone() #fetch userID values
+    userID = dbActivity.execute("SELECT * FROM Users WHERE ID = 1") #Finds all user 01's information from users table
+    validUser1= userID.fetchone() #fetch userID values
+    validUser1 = validUser1[0] #the first valid user is identified by just their ID#
 
-    userPassword = dbActivity.execute("SELECT password FROM Users ") #Finds all user password information from users table
-    validPassword = dbActivity.fetchone()#fetch user password values
+    userPassword = dbActivity.execute("SELECT * FROM Users WHERE password = 'password'") #Finds all user password information from users table
+    validPassword1 = dbActivity.fetchone()#fetch user password values
+    validPassword1 = validPassword1[4] #the first valid user's password
     
-    if (data ==  "LOGIN" + " " + int(validUser) + " " + str(validPassword)): #for when the user's input is acccurate 
+    if (data ==  "LOGIN" + " " + str(validUser1) + " " + str(validPassword1)): #for when the user's input is acccurate 
         loginMessage = "200 OK"
         connection.send(loginMessage.encode()) 
 
@@ -108,7 +110,7 @@ while True: #starting new thread client connection
                     rootUser = activeUser[0]
 
                     #if the active user is the root user allow for shutdown
-                    if (validUser == rootUser):
+                    if (validUser1 == rootUser):
                         sendMessage = "200 OK"
                         connection.send(sendMessage.encode()) #send message to client
                         connection.close()
