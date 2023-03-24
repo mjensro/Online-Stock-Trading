@@ -95,7 +95,7 @@ while True: #starting new thread client connection
     validPassword = dbActivity.fetchone()#fetch user password values
 
 
-    if (data ==  "LOGIN" + " " + str(validUser) + " " + str(validPassword)):  #for when the user's input is acccurate 
+    if (data ==  "LOGIN" + " " + int(validUser) + " " + str(validPassword)):  #for when the user's input is acccurate 
         loginMessage = "200 OK"
         connection.send(loginMessage.encode()) 
 
