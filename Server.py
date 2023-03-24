@@ -94,7 +94,7 @@ while True: #starting new thread client connection
     userPassword = dbActivity.execute("SELECT password FROM Users ") #Finds all user password information from users table
     validPassword = dbActivity.fetchone()#fetch user password values
     
-    if (data ==  "LOGIN" + " " + int(validUser) + " " + str(validPassword)):  #for when the user's input is acccurate 
+    if (data ==  "LOGIN" + " " + int(validUser) + " " + str(validPassword)): #for when the user's input is acccurate 
         loginMessage = "200 OK"
         connection.send(loginMessage.encode()) 
 
@@ -107,7 +107,7 @@ while True: #starting new thread client connection
                     activeUser = activeUserCheck.fetchone()
                     rootUser = activeUser[0]
 
-                    #if the active user is the Root user allow for shutdown
+                    #if the active user is the root user allow for shutdown
                     if (validUser == rootUser):
                         sendMessage = "200 OK"
                         connection.send(sendMessage.encode()) #send message to client
