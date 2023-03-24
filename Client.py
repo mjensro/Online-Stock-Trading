@@ -42,7 +42,7 @@ except:
 
 shutDown = 0
 while shutDown == 0: #while user does not request shutdown
-    userInput = raw_input("input: ") #accepting user input
+    userInput = raw_input("\ninput: ") #accepting user input
 
 
     #quit message goes here

@@ -151,7 +151,7 @@ while True: #starting new thread client connection
             elif (clientdata == "LIST"):#List all records in the Stocks table/file
                     stockActivity = dbActivity.execute("SELECT * FROM Stocks") #Finding all stock infromation within stock table
                     stocks = stockActivity.fetchone() #fetch stock values
-                    list = "200 OK \n The list of records in the Stocks database for user 1: \n"
+                    list = "200 OK \n The list of records in the Stocks database for user 1: "
                     while stocks is not None: #loop through all stock records within database
                         list += str(stocks[0]) + " " +stocks[1] + " " + stocks[2] + " " + str(stocks[3]) + " " + stocks[4] + "\n"
                         stocks = stockActivity.fetchone()
@@ -201,6 +201,7 @@ while True: #starting new thread client connection
     else: #If user enters invalid userID or password information
         connection.send("403 Wrong UserID or Password".encode())
         #print_lock.release()
+        continue
 
 
     if (data == "SHUTDOWN"): #if user tries to enter shutdown without being logged in
