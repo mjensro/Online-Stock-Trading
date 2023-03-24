@@ -25,7 +25,7 @@ s = socket.socket()
 
 try:
     s.connect((host,SERVER_PORT)) #connect to host given with pre-assigned port number
-    print("Commands: \nLIST \nBALANCE \nQUIT \nSHUTDOWN\n")
+    print("Commands: \nLOGIN \nLIST \nBALANCE \nQUIT \nSHUTDOWN\n")
 except:
     print("Cannot connect to server")
     exit()
