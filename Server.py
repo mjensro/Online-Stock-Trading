@@ -11,7 +11,7 @@ import sqlite3 #only server should handle SQL statements
 from _thread import *
 import threading
 
-print_lock = threading.Lock()
+#print_lock = threading.Lock()
 
 ip = ""
 SERVER_PORT = 7399 #unique port using last 4 digits of ID
@@ -85,7 +85,7 @@ while True: #starting new thread client connection
     if len(data) == 0:
         #if invalid command format
         connection.send("403 message format error\n".encode())
-        print_lock.release()
+        #print_lock.release()
         connection.close()
                                      
     userID = dbActivity.execute("SELECT * FROM Users WHERE ID = 1") #Finds all user 01's information from users table
@@ -99,37 +99,61 @@ while True: #starting new thread client connection
     userRequest = data.split(" ")
     data = userRequest[0]
     if (data ==  "LOGIN" + " " + str(validUser1) + " " + str(validPassword1)): #for when the user's input is acccurate 
+        login = True
         loginMessage = "200 OK"
+<<<<<<< Updated upstream
         connection.send(loginMessage.encode()) 
         if len(userRequest) < 3: #checks for proper formatting and values for the BUY command
             username = userRequest[1]
             password = userRequest[2]
         while True: #starting new thread for client
+=======
+        connection.send(loginMessage.encode())
+
+        while login == True: #starting new thread for valid client
+>>>>>>> Stashed changes
             #lock acquired by client
-            print_lock.acquire()
+            #print_lock.acquire()
+            #connection.send(" inside client connection!".encode())
+
+            #data sent from client
+            clientdata = connection.recv(1024) #buffer rate
+            clientdata = clientdata.decode("utf-8")
+            print(clientdata)
         
+<<<<<<< Updated upstream
             if (data == "SHUTDOWN"):
                     activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE user_name = 'Root'") #gets root user's information
                     activeUser = activeUserCheck.fetchone()
                     rootUser = activeUser[0]
+=======
+            if (clientdata == "SHUTDOWN"):
+                    #activeUser = activeUserCheck.fetchone()
+                    #rootUser = activeUser[0]
+>>>>>>> Stashed changes
 
                     #if the active user is the root user allow for shutdown
-                    if (validUser1 == rootUser):
-                        sendMessage = "200 OK"
-                        connection.send(sendMessage.encode()) #send message to client
-                        connection.close()
-                        sys.exit()
-                    
-                    else:
-                        connection.send("Only root user is authorized to SHUTDOWN! Denied!".encode())
+                    #if (validUser1 == rootUser):
+                    sendMessage = "200 OK"
+                    connection.send(sendMessage.encode()) #send message to client
+                    connection.close()
+                    sys.exit()
+                
+                
+                    #connection.send("Only root user is authorized to SHUTDOWN! Denied!".encode())
 
+<<<<<<< Updated upstream
             elif (data == "BALANCE"):#display the USD balance for user 1
                     activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE user_name = 'Root'") #Selecting all information regarding user1 from Users table
+=======
+            elif (clientdata == "BALANCE"):#display the USD balance for user 1
+                    activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE user_name = 'user1'") #Selecting all information regarding user1 from Users table
+>>>>>>> Stashed changes
                     activeUser = activeUserCheck.fetchone()
                     balanceMessage = " 200 OK\n Balance for " + activeUser[1] + " " + activeUser[2] + ": $" + str(activeUser[5]) #displays users first and last name with their corresponding balance amount
                     connection.send(balanceMessage.encode())
 
-            elif (data == "LIST"):#List all records in the Stocks table/file
+            elif (clientdata == "LIST"):#List all records in the Stocks table/file
                     stockActivity = dbActivity.execute("SELECT * FROM Stocks") #Finding all stock infromation within stock table
                     stocks = stockActivity.fetchone() #fetch stock values
                     list = "200 OK \n The list of records in the Stocks database for user 1: \n"
