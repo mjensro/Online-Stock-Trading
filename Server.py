@@ -79,11 +79,18 @@ except socket.error as e:
 print("Awaiting client connection...")
 s.listen(4)
 
+listen = 0
 
-while True: #starting new thread client connection
+#accepts new connection
+connection, address = s.accept()
+print('connected to: '+address[0]+':'+str(address[1]))
+
+
+
+while listen == 0: #starting new thread client connection
     #accepts new connection
-    connection, address = s.accept()
-    print('connected to: '+address[0]+':'+str(address[1]))
+    #connection, address = s.accept()
+    #print('connected to: '+address[0]+':'+str(address[1]))
 
 
     #recieves data stream and won't except data packet greater than 2048 bytes
@@ -113,6 +120,12 @@ while True: #starting new thread client connection
         loginMessage = "200 OK"
         connection.send(loginMessage.encode())
 
+        #put clientdata lines here above logout
+        #possibly put logout right here
+        #put who function here for only the root user can access!! error message otherwise
+        #depending on how we can loop for all user's id's and passwords, can do the same and print client's user name and address
+        #+address[0]+':'+str(address[1])
+
 
         while login == True: #starting new thread for valid client
             #lock acquired by client
@@ -124,6 +137,7 @@ while True: #starting new thread client connection
             clientdata = connection.recv(1024) #buffer rate
             clientdata = clientdata.decode("utf-8")
             print(clientdata)
+            #put above three lines out of this loop for logout function to work
        
             if (clientdata == "SHUTDOWN"):
                     #activeUser = activeUserCheck.fetchone()
@@ -197,17 +211,18 @@ while True: #starting new thread client connection
                     dbActivity.execute("INSERT INTO Stocks (stock_symbol, stock_name, stock_balance, user_id) VALUES ('" + stockSymbol + "','" + stockName + "','" + str(purchaseAmount) +"','user1')")
                     """
 
-
-    else: #If user enters invalid userID or password information
-        connection.send("403 Wrong UserID or Password".encode())
-        #print_lock.release()
-        continue
-
-
+    
     if (data == "SHUTDOWN"): #if user tries to enter shutdown without being logged in
         connection.send("Only root user is authorized to SHUTDOWN! Denied!".encode())
 
 
-    connection.close()
+    else: #If user enters invalid userID or password information
+        connection.send("403 Wrong UserID or Password".encode())
+        #print_lock.release()
+        #continue
+
+
+
+connection.close()
 
 
