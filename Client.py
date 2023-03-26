@@ -32,7 +32,7 @@ s = socket.socket()
 
 try:
     s.connect((host,SERVER_PORT)) #connect to host given with pre-assigned port number
-    print("Commands: \nLOGIN \nLIST \nBALANCE \nQUIT \nSHUTDOWN\n")
+    print("Commands: \nLOGIN \nLIST \nLOGOUT \nWHO \nLOOKUP \nBALANCE \nQUIT \nSHUTDOWN\n")
 except:
     print("Cannot connect to server")
     exit()
@@ -44,14 +44,12 @@ shutDown = 0
 while shutDown == 0: #while user does not request shutdown
     userInput = raw_input("\ninput: ") #accepting user input
 
-
-    #quit message goes here
-    if userInput == "QUIT":
-        print("200 OK")
-        s.close()
-
-
     if len(userInput) > 0:
+
+        #quit message goes here
+        if userInput == "QUIT":
+          print("200 OK")
+          s.close()
 
 
         if userInput == "SHUTDOWN":

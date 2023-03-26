@@ -18,5 +18,3 @@ stock_balance DOUBLE,
 user_id TEXT,        
 FOREIGN KEY (user_id) REFERENCES Users (ID)           
 );
-
- 
