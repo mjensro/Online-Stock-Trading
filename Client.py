@@ -6,14 +6,18 @@
 #client should be allowed to connect to the server.
 
 
-import socket #used to connect to socket
+import socket
 import sys #used to input argv statements
 from _thread import * #threading
 
+#s = socket.socket()
+#host = '127.0.0.1'
+#port = 1233
 
 SERVER_PORT = 7399 #last 4 digits of id for unique port
+host = ""
 
-
+'''
 if __name__ == "__main__":
     host = ""
     n = len(sys.argv) #intakes compiling statement as an array
@@ -24,32 +28,47 @@ else:
     print ("Invalid argument")
     exit()
 
-
-
+'''
 
 s = socket.socket()
 
 
+
+print('Waiting for connection')
 try:
-    s.connect((host,SERVER_PORT)) #connect to host given with pre-assigned port number
+    s.connect((host, SERVER_PORT))
     print("Commands: \nLOGIN \nLIST \nLOGOUT \nWHO \nLOOKUP \nBALANCE \nQUIT \nSHUTDOWN\n")
-except:
+except socket.error as e:
+    print(str(e))
     print("Cannot connect to server")
-    exit()
 
+'''
+Response = s.recv(1024)
+while True:
+    Input = input('Say Something: ')
+    s.send(str.encode(Input))
+    Response = s.recv(1024)
+    print(Response.decode('utf-8'))
 
+s.close()
+
+'''
 
 
 shutDown = 0
 while shutDown == 0: #while user does not request shutdown
     userInput = raw_input("\ninput: ") #accepting user input
 
+
     if len(userInput) > 0:
+
 
         #quit message goes here
         if userInput == "QUIT":
           print("200 OK")
           s.close()
+
+
 
 
         if userInput == "SHUTDOWN":
@@ -58,6 +77,8 @@ while shutDown == 0: #while user does not request shutdown
           print("Output: " + data) #outputting response
           s.close()
           sys.exit()
+
+
 
 
         try:
@@ -74,5 +95,6 @@ while shutDown == 0: #while user does not request shutdown
        
 
 
-s.close() #close socket connection
 
+
+s.close() #close socket connection
