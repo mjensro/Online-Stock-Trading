@@ -67,7 +67,10 @@ stockRecord = dbActivity.execute("SELECT ID FROM Stocks WHERE ID = 1") #checks i
 if stockRecord.fetchone() is None: #Creates default stock records
     dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(1, 'TSLA', 'Tesla', '50.00','root')")
     dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(2, 'AMZN', 'Amazon', '100.00','root')")
-    dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(3, 'MSFT', 'Microsoft', '250.00','mary')")
+    dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(3, 'AMZN', 'Amazon', '100.00','mary')")
+    dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(4, 'MSFT', 'Microsoft', '250.00','mary')")
+    dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(5, 'MSFT', 'Microsoft', '250.00','john')")
+    dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(6, 'MSFT', 'Microsoft', '250.00','moe')")
     db.commit()
 
 
@@ -228,11 +231,7 @@ def threaded_client(connection):
 
                         #FUNCTION FOR LIST
                         elif (clientdata == "LIST"):#List all records in the Stocks table/file
-                                """connection.send("\nEnter UserID".encode()) #obtain stock price
-                                userID = connection.recv(1024).decode()
-                                print(userID)"""
-                                if (username == "root" and password == "root01"):
-                                    #if the root user is logged in, they can view all records
+                                if (username == "root" and password == "root01"):#if the root user is logged in, they can view all records
 
                                     stockActivity = dbActivity.execute("SELECT * FROM Stocks") #Finding all stock infromation within stock table
                                     stocks = stockActivity.fetchone() #fetch stock values
@@ -242,7 +241,7 @@ def threaded_client(connection):
                                         stocks = stockActivity.fetchone()
                                     connection.send(list.encode())
                                 else:
-                                    stockActivity = dbActivity.execute("SELECT * FROM Stocks WHERE user_id = '" + username + "'") #Finding all stock infromation within stock table
+                                    stockActivity = dbActivity.execute("SELECT * FROM Stocks WHERE user_id = '" + username + "'") #Finding stock information associated with specific logged in user
                                     stocks = stockActivity.fetchone() #fetch stock values
                                     list = "200 OK \n The list of records in the Stocks database for " + str(username) + ":\n"
                                     while stocks is not None: #loop through all stock records within database
@@ -257,11 +256,11 @@ def threaded_client(connection):
                                 print(depositAmount)
 
                                     #get user's stock information based on the stock symbol they entered
-                                bal = dbActivity.execute("SELECT usd_balance FROM Users WHERE user_name = '"+username+"' ")
+                                bal = dbActivity.execute("SELECT usd_balance FROM Users WHERE user_name = '"+username+"' ") #get current balance
                                 balanceRecord = bal.fetchone()
                                 balanceAmount = float(balanceRecord[0])
 
-                                newBalance = balanceAmount + float(depositAmount)
+                                newBalance = balanceAmount + float(depositAmount) #add new deposit to balance
                                 dbActivity.execute("UPDATE Users SET usd_balance = '" + str(newBalance) + "' WHERE user_name = '"+username+"' ")
                                 db.commit()
 
@@ -272,10 +271,6 @@ def threaded_client(connection):
                         if (clientdata == "BUY"): #change to command/userRequest[0]?
                                 #BUY MSFT 3.4 1.35 1 // Where 3.4 is the amount of stocks to buy, $1.35 price per stock, 1 is the user id.
                                 #^The above must be entered in separately through multiple prompts^
-                                #userBalance = 0.0
-                                """if len(userRequest) < 4: 
-                                    connection.send("403 message format error".encode())
-                                    continue"""
                                 connection.send("\nEnter Stock Name".encode()) #obtain stock name
                                 stockName = connection.recv(1024).decode()
                                 print(stockName)
