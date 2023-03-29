@@ -24,7 +24,7 @@ s = socket.socket()
 print('Waiting for connection')
 try:
     s.connect((host, SERVER_PORT))
-    print("Commands: \nLOGIN \nLIST \nLOGOUT \nWHO \nLOOKUP \nBALANCE \nQUIT \nSHUTDOWN\n")
+    print("Commands: \nLOGIN \nLIST \nLOGOUT \nWHO \nLOOKUP \nBUY \nSELL \nDEPOSIT \nBALANCE \nQUIT \nSHUTDOWN\n")
 except socket.error as e:
     print(str(e))
     print("Cannot connect to server")
