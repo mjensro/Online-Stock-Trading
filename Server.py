@@ -209,8 +209,8 @@ def threaded_client(connection):
                                     #if the active user is the root user allow for shutdown
                                     sendMessage = "200 OK"
                                     connection.send(sendMessage.encode()) #send message to client
-                                    connection.close()
-                                    s.close()
+                                    #connection.close()
+                                    #s.close()
                                     sys.exit()
 
                                 else:
