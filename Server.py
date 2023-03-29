@@ -65,9 +65,9 @@ if user.fetchone() is None: #if no userID = 1 record exists, it creates the defa
     db.commit() #add changes to database
 stockRecord = dbActivity.execute("SELECT ID FROM Stocks WHERE ID = 1") #checks if there is at least 1 stock record
 if stockRecord.fetchone() is None: #Creates default stock records
-    dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(1, 'TSLA', 'Tesla', '50.00','1')")
-    dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(2, 'AMZN', 'Amazon', '100.00','1')")
-    dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(3, 'MSFT', 'Microsoft', '250.00','2')")
+    dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(1, 'TSLA', 'Tesla', '50.00','root')")
+    dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(2, 'AMZN', 'Amazon', '100.00','root')")
+    dbActivity.execute("INSERT INTO Stocks(ID, stock_symbol, stock_name, stock_balance, user_id) VALUES(3, 'MSFT', 'Microsoft', '250.00','mary')")
     db.commit()
 
 
@@ -185,7 +185,7 @@ def threaded_client(connection):
                                 print(client_Stock)
 
                                 #get user's stock information based on the stock symbol they entered
-                                stockActivityuserSt = dbActivity.execute("SELECT * FROM Stocks WHERE stock_symbol = '"+client_Stock+"' AND user_id = '"+str(ID)+"'") #user id in users table is int but in stocks table its text so convert
+                                stockActivityuserSt = dbActivity.execute("SELECT * FROM Stocks WHERE stock_symbol = '"+client_Stock+"' AND user_id = '"+str(username)+"'") #user id in users table is int but in stocks table its text so convert
                                 get_Stock = stockActivityuserSt.fetchone()
 
                                 #if symbol does not exist in the table for the user
@@ -228,17 +228,31 @@ def threaded_client(connection):
 
                         #FUNCTION FOR LIST
                         elif (clientdata == "LIST"):#List all records in the Stocks table/file
-                                stockActivity = dbActivity.execute("SELECT * FROM Stocks") #Finding all stock infromation within stock table
-                                stocks = stockActivity.fetchone() #fetch stock values
-                                list = "200 OK \n The list of records in the Stocks database for " + username + ":\n"
-                                while stocks is not None: #loop through all stock records within database
-                                    list += str(stocks[0]) + " " +stocks[1] + " " + stocks[2] + " " + str(stocks[3]) + " " + stocks[4] + "\n"
-                                    stocks = stockActivity.fetchone()
-                                connection.send(list.encode())
+                                """connection.send("\nEnter UserID".encode()) #obtain stock price
+                                userID = connection.recv(1024).decode()
+                                print(userID)"""
+                                if (username == "root" and password == "root01"):
+                                    #if the root user is logged in, they can view all records
+
+                                    stockActivity = dbActivity.execute("SELECT * FROM Stocks") #Finding all stock infromation within stock table
+                                    stocks = stockActivity.fetchone() #fetch stock values
+                                    list = "200 OK \n The list of records in the Stocks database for " + str(username) + ":\n"
+                                    while stocks is not None: #loop through all stock records within database
+                                        list += str(stocks[0]) + " " +stocks[1] + " " + stocks[2] + " " + str(stocks[3]) + " " + stocks[4] + "\n"
+                                        stocks = stockActivity.fetchone()
+                                    connection.send(list.encode())
+                                else:
+                                    stockActivity = dbActivity.execute("SELECT * FROM Stocks WHERE user_id = '" + username + "'") #Finding all stock infromation within stock table
+                                    stocks = stockActivity.fetchone() #fetch stock values
+                                    list = "200 OK \n The list of records in the Stocks database for " + str(username) + ":\n"
+                                    while stocks is not None: #loop through all stock records within database
+                                        list += str(stocks[0]) + " " +stocks[1] + " " + stocks[2] + " " + str(stocks[3]) + " " + stocks[4] + "\n"
+                                        stocks = stockActivity.fetchone()
+                                    connection.send(list.encode())
                         
                         #FUNCTION FOR DEPOSIT
                         if (clientdata == "DEPOSIT"): #"DEPOSIT" followed by a space, followed by a USD amount, followed by a space, followed the newline character (i.e., '\n')
-                                connection.send("Enter Deposit Amount: ".encode())
+                                connection.send("Enter Deposit Amount: ".encode()) #obtain deposit amount from user
                                 depositAmount = connection.recv(1024).decode()
                                 print(depositAmount)
 
@@ -257,6 +271,7 @@ def threaded_client(connection):
                        #FUNCTION FOR BUY
                         if (clientdata == "BUY"): #change to command/userRequest[0]?
                                 #BUY MSFT 3.4 1.35 1 // Where 3.4 is the amount of stocks to buy, $1.35 price per stock, 1 is the user id.
+                                #^The above must be entered in separately through multiple prompts^
                                 #userBalance = 0.0
                                 """if len(userRequest) < 4: 
                                     connection.send("403 message format error".encode())
@@ -273,9 +288,9 @@ def threaded_client(connection):
                                 price = connection.recv(1024).decode()
                                 print(price)
 
-                                connection.send("\nEnter UserID".encode()) #obtain stock price
+                                """connection.send("\nEnter UserID".encode()) #obtain stock price
                                 userID = connection.recv(1024).decode()
-                                print(userID)
+                                print(userID)"""
                                 #stockName = userRequest[1]
                                 #amount = float(userRequest[2])
                                 #price = float(userRequest[3])
@@ -288,11 +303,11 @@ def threaded_client(connection):
                                     continue
                                 
                                 userBalance = (userBalance - (float(purchaseAmount) * float(price))) #update balance value by subtracting current balance by purchase amount times price
-                                fetchStockBalance = dbActivity.execute("SELECT stock_balance FROM Stocks WHERE stock_name = '" + stockName + "' AND user_id = '" + userID + "'") #checking for pre-existing records with the given stock name & userID
+                                fetchStockBalance = dbActivity.execute("SELECT stock_balance FROM Stocks WHERE stock_name = '" + stockName + "' AND user_id = '" + username + "'") #checking for pre-existing records with the given stock name & userID
                                 stockRecs = fetchStockBalance.fetchone()
 
                                 if stockRecs is None: #if no stock records currently exists under the entered stockname and userID
-                                    dbActivity.execute("INSERT INTO Stocks (stock_symbol, stock_name, stock_balance, user_id) VALUES ('" + stockName + "','" + stockName + "','" + str(purchaseAmount) +"','" + userID + "')") #inserts as new stock record if it didn't exist previously
+                                    dbActivity.execute("INSERT INTO Stocks (stock_symbol, stock_name, stock_balance, user_id) VALUES ('" + stockName + "','" + stockName + "','" + str(purchaseAmount) +"','" + username + "')") #inserts as new stock record if it didn't exist previously
                                     db.commit()
    
                                     confirm = "200 OK \nBOUGHT:" + stockName + " New balance: "+ str(userBalance)
@@ -302,7 +317,7 @@ def threaded_client(connection):
                                     oldAmount = float(temp[0])
                                     purchaseAmount += oldAmount
 
-                                    dbActivity.execute("UPDATE Stocks SET stock_balance = '" + str(purchaseAmount) + "' WHERE user_id = '" + userID + "' AND stock_name = '" + stockName + "'")
+                                    dbActivity.execute("UPDATE Stocks SET stock_balance = '" + str(purchaseAmount) + "' WHERE user_id = '" + username + "' AND stock_name = '" + stockName + "'")
                                     db.commit()
                                     dbActivity.execute("UPDATE Users SET usd_balance = '" + str(userBalance) + "' WHERE user_name = '" + username + "'") #update balance in users account
                                     db.commit()
@@ -311,10 +326,9 @@ def threaded_client(connection):
                                     connection.send(confirm.encode())
 
                         #FUNCTION FOR SELL
-                        if (clientdata == "SELL"): #SELL APPL 2 1.45 1 //Where stock symbol is APPL, amount to be sold 2, price per stock $1.45, and 1 is the userid.
-                            userbal = 0.0
-                            oldAmount = 0.0
-                        
+                        if (clientdata == "SELL"): 
+                            #SELL APPL 2 1.45 1 //Where stock symbol is APPL, amount to be sold 2, price per stock $1.45, and 1 is the userid.
+                            ##^The above must be entered in separately through multiple prompts^
                             connection.send("Enter Stock Name: ".encode())
                             stockName = connection.recv(1024).decode()
                             print(stockName)
@@ -326,14 +340,7 @@ def threaded_client(connection):
                             connection.send("Enter Price: ".encode())
                             price = connection.recv(1024).decode()
                             print(price)
-                            print("control Check0")
-                                #stockName = userRe
-                            """if len(userRequest) < 4: #checks for proper formatting and values for the SELL command
-                                connection.send("403 message format error".encode())
-                                continue"""
-                            """if not ((userRequest[2]) and (userRequest[3]) and (float(userRequest[2]) > 0) and (float(userRequest[3]) > 0)):# checks if the values are floats and amount & price inputs > 0
-                                connection.send("403 message format error".encode())
-                                continue"""
+
                             #stockName = userRequest[1]
                             #amount = float(userRequest[2])
                             #price = float(userRequest[3])
@@ -361,9 +368,7 @@ def threaded_client(connection):
                             dbActivity.execute("UPDATE Users SET usd_balance = '" + str(userbal) + "' WHERE user_name = '" + username + "'") #update balance in users account
                             db.commit()
 
-                            result = dbActivity.execute("SELECT stock_balance FROM Stocks WHERE stock_name = '" + stockName + "'")
-                            stockBal = result.fetchone()[0]
-                            confirm = "200 OK\nSOLD: " + str(stockName) +" New balance: USD $" +str(userbal)
+                            confirm = "200 OK\nSOLD: " + str(stockName) +" New balance: USD $" +str(userbal) #outputting result
                             connection.send(confirm.encode())
 
                 if (command == "SHUTDOWN"): #if user tries to enter shutdown without being logged in
@@ -380,8 +385,6 @@ def threaded_client(connection):
 
                   
     connection.close()
-    
-    
 
 while True:
     Client, address = s.accept()
