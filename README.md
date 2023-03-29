@@ -40,17 +40,13 @@ WHO- by Taylor Williams - List all active users, including the UserID and the us
 LOOKUP- by Taylor Williams - Look up a stock name in the list. Display the complete stock record for the logged in user. A client sends the ASCII string “LOOKUP" followed by a space, followed by a name followed by the newline character (i.e., '\n'). 
 
 
-DEPOSIT- by Michelle Sroka -Deposit USD to the user’s account/record. A user can deposit an amount of USD into their account. A client that wants to deposit an amount of USD should begin by sending the ASCII string “DEPOSIT" followed by a space, followed by a USD amount, followed by a space, followed the newline character (i.e., '\n'). 
+DEPOSIT- by Michelle Sroka  - Deposit USD to the users account and update their total balance by just entering DEPOSIT and then following it with the amount to update by
 
 
-BUY- by Michelle Sroka - Buy an amount of stocks. A client sends the ASCII string “BUY” followed by a space, followed by a stock_symbol, followed by a space, followed by a stock_amount, followed by
-a space, followed by the price per stock, followed by a User_ID, and followed by the
-newline character (i.e., '\n')
+BUY- by Michelle Sroka - Buy an amount of stocks after logging in. Enter the "BUY" command and let the prompts guide you through entering all other needed information (purchase price, amount, userID)
 
 
-SELL- by Michelle Sroka - SELL an amount of stock. A client sends the ASCII string “BUY” followed by a space,followed by a stock_symbol, followed by a space, followed by stock price, followed by a
-space, followed by a stock_amount, followed by a space, followed by a User_ID, and
-followed by the newline character (i.e., '\n').
+SELL- by Michelle Sroka - SELL an amount of stock after logging in. Enter "SELL" and let the prompts guide you through entering all other needed information (purchase price, amount, userID)
 
 
 LIST- by Michelle Sroka - Displays all stock records within Stocks table
@@ -112,8 +108,8 @@ When the authorized user runs the SHUTDOWN command, the client side of the progr
 
                                       Test Case Table
 
-See ReadMe Doc.
+See ReadME Doc.
 
                                         ScreenShots
 
-See ReadMe Doc.
+See ReadE Doc.

@@ -256,83 +256,114 @@ def threaded_client(connection):
                         
                        #FUNCTION FOR BUY
                         if (clientdata == "BUY"): #change to command/userRequest[0]?
-                                userBalance = 0.0
-                                if len(userRequest) < 4: #BUY MSFT 3.4 1.35 1 // Where 3.4 is the amount of stocks to buy, $1.35 price per stock, 1 is the user id.
+                                #BUY MSFT 3.4 1.35 1 // Where 3.4 is the amount of stocks to buy, $1.35 price per stock, 1 is the user id.
+                                #userBalance = 0.0
+                                """if len(userRequest) < 4: 
                                     connection.send("403 message format error".encode())
+                                    continue"""
+                                connection.send("\nEnter Stock Name".encode()) #obtain stock name
+                                stockName = connection.recv(1024).decode()
+                                print(stockName)
+                                
+                                connection.send("\nEnter Purchase Amount".encode()) #obtain purchase amount
+                                purchaseAmount = connection.recv(1024).decode()
+                                print(purchaseAmount)
+
+                                connection.send("\nEnter Price".encode()) #obtain stock price
+                                price = connection.recv(1024).decode()
+                                print(price)
+
+                                connection.send("\nEnter UserID".encode()) #obtain stock price
+                                userID = connection.recv(1024).decode()
+                                print(userID)
+                                #stockName = userRequest[1]
+                                #amount = float(userRequest[2])
+                                #price = float(userRequest[3])
+                                fetchBalance = dbActivity.execute("SELECT usd_balance FROM Users WHERE user_name = '"+username+"' ") #fetchBalance for logged in user
+                                userRecord = fetchBalance.fetchone()
+                                userBalance = float(userRecord[0])
+                                #userID = userRecord[0]
+                                if userBalance <= 0: #if balance is less than or equal to 0, you cannot afford to buy
+                                    connection.send("Insufficient Balance".encode())
                                     continue
-                                stockName = userRequest[1]
-                                amount = float(userRequest[2])
-                                price = float(userRequest[3])
-                                result = dbActivity.execute("SELECT usd_balance FROM USERS WHERE user_name = '" + username + "'")
-                                temp = result.fetchone()
-                                if temp is None:
-                                    connection.send("User not found".encode())
-                                    continue
-                                   
-                                userBalance = temp[0]
-                                if userBalance < 0:
-                                    connection.send("Not enough balance".encode())
-                                    continue
-                                userBalance = float(userBalance - (amount * price)) #update balance value
-                                result = dbActivity.execute("SELECT stock_balance FROM Stocks WHERE stock_name = '" + stockName + "' AND user_name = '" + username + "'")
-                                temp = result.fetchone()
-                                if temp is None:
-                                    dbActivity.execute("INSERT INTO Stocks (stock_symbol, stock_name, stock_balance, user_id) VALUES ('" + stockName + "','" + stockName + "','" + str(amount) +"','" + username + "')") #inserts stock record if one doesn't already exist
+                                
+                                userBalance = (userBalance - (float(purchaseAmount) * float(price))) #update balance value by subtracting current balance by purchase amount times price
+                                fetchStockBalance = dbActivity.execute("SELECT stock_balance FROM Stocks WHERE stock_name = '" + stockName + "' AND user_id = '" + userID + "'") #checking for pre-existing records with the given stock name & userID
+                                stockRecs = fetchStockBalance.fetchone()
+
+                                if stockRecs is None: #if no stock records currently exists under the entered stockname and userID
+                                    dbActivity.execute("INSERT INTO Stocks (stock_symbol, stock_name, stock_balance, user_id) VALUES ('" + stockName + "','" + stockName + "','" + str(purchaseAmount) +"','" + userID + "')") #inserts as new stock record if it didn't exist previously
                                     db.commit()
-                                else:
-                                    oldAmount = temp[0]
-                                    amount += oldAmount
-                                    dbActivity.execute("UPDATE Stocks SET stock_balance = '" + str(amount) + "' WHERE user_name = '" + username + "' AND stock_name = '" + stockName + "'")
+   
+                                    confirm = "200 OK \nBOUGHT:" + stockName + " New balance: "+ str(userBalance)
+                                    connection.send(confirm.encode())
+
+                                else: #update old record to new balance if the same stockname appears
+                                    oldAmount = float(temp[0])
+                                    purchaseAmount += oldAmount
+
+                                    dbActivity.execute("UPDATE Stocks SET stock_balance = '" + str(purchaseAmount) + "' WHERE user_id = '" + userID + "' AND stock_name = '" + stockName + "'")
                                     db.commit()
                                     dbActivity.execute("UPDATE Users SET usd_balance = '" + str(userBalance) + "' WHERE user_name = '" + username + "'") #update balance in users account
                                     db.commit()
-                                    result = dbActivity.execute("SELECT stock_balance FROM Stocks WHERE stock_name = '" + stockName + "' AND user_name = '" + username + "'")
-                                    stockBalance = result.fetchone()[0]
-                                    confirm = "200 OK \nBOUGHT: New balance: %.2f %s USD Balance: $%.2f" % (stockBalance, stockName, userBalance)
+
+                                    confirm = "200 OK \nBOUGHT:" + stockName + " New balance: $"+ str(userBalance)# %.2f %s USD Balance: $%.2f" % (stockBalance, stockName, userBalance)
                                     connection.send(confirm.encode())
 
                         #FUNCTION FOR SELL
                         if (clientdata == "SELL"): #SELL APPL 2 1.45 1 //Where stock symbol is APPL, amount to be sold 2, price per stock $1.45, and 1 is the userid.
                             userbal = 0.0
                             oldAmount = 0.0
-                            if len(userRequest) < 4: #checks for proper formatting and values for the SELL command
+                        
+                            connection.send("Enter Stock Name: ".encode())
+                            stockName = connection.recv(1024).decode()
+                            print(stockName)
+                                
+                            connection.send("Enter Sell Amount: ".encode())
+                            sellAmount = connection.recv(1024).decode()
+                            print(sellAmount)
+
+                            connection.send("Enter Price: ".encode())
+                            price = connection.recv(1024).decode()
+                            print(price)
+                            print("control Check0")
+                                #stockName = userRe
+                            """if len(userRequest) < 4: #checks for proper formatting and values for the SELL command
                                 connection.send("403 message format error".encode())
-                                continue
+                                continue"""
                             """if not ((userRequest[2]) and (userRequest[3]) and (float(userRequest[2]) > 0) and (float(userRequest[3]) > 0)):# checks if the values are floats and amount & price inputs > 0
                                 connection.send("403 message format error".encode())
                                 continue"""
-                            stockName = userRequest[1]
-                            amount = float(userRequest[2])
-                            price = float(userRequest[3])
-                            userID = userRequest[4]
+                            #stockName = userRequest[1]
+                            #amount = float(userRequest[2])
+                            #price = float(userRequest[3])
+                            #userID = userRequest[4]
                             result = dbActivity.execute("SELECT usd_balance FROM Users WHERE user_name = '" + username + "'")
                             temp = result.fetchone()
-                            if temp is None:
-                                connection.send("User not found".encode())
-                                continue
-                            else:
-                                userbal = temp[0]
-                            result = dbActivity.execute("SELECT stock_balance FROM Stocks WHERE stock_name = '" + stockName + "' AND user_id = '" + userID + "'")
+                            userbal = float(temp[0])
+                            result = dbActivity.execute("SELECT stock_balance FROM Stocks WHERE stock_name = '" + stockName + "'")
                             temp = result.fetchone()
+
                             if temp is None:
                                 connection.send("Stock not found".encode())
                                 continue
                             else:
                                 oldAmount = temp[0]
                             
-                            userbal += float(amount * price)
-                            amount = oldAmount - amount
-                            
-                            if amount < 0:
+                            userbal += float(sellAmount) * float(price)
+                            sellAmount = float(oldAmount) - float(sellAmount)
+
+                            if sellAmount < 0:
                                 connection.send("Insufficient Balance".encode())
                                 continue
-                            dbActivity.execute("UPDATE Stocks SET stock_balance = '" + str(amount) + "' WHERE user_id = '" + userID + "' AND stock_name = '" + stockName + "'")
+                            dbActivity.execute("UPDATE Stocks SET stock_balance = '" + str(sellAmount) + "' AND stock_name = '" + stockName + "'")
                             db.commit()
                             dbActivity.execute("UPDATE Users SET usd_balance = '" + str(userbal) + "' WHERE user_name = '" + username + "'") #update balance in users account
                             db.commit()
-                            result = dbActivity.execute("SELECT stock_balance FROM Stocks WHERE stock_name = '" + stockName + "' AND user_id = '" + userID + "'")
+
+                            result = dbActivity.execute("SELECT stock_balance FROM Stocks WHERE stock_name = '" + stockName + "'")
                             stockBal = result.fetchone()[0]
-                            confirm = "200 OK\nSOLD: New balance: USD Balance: $"+stockBal + stockName +  userbal
+                            confirm = "200 OK\nSOLD: " + str(stockName) +" New balance: USD $" +str(userbal)
                             connection.send(confirm.encode())
 
                 if (command == "SHUTDOWN"): #if user tries to enter shutdown without being logged in
