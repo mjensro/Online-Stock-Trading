@@ -17,21 +17,8 @@ from _thread import * #threading
 SERVER_PORT = 7399 #last 4 digits of id for unique port
 host = ""
 
-'''
-if __name__ == "__main__":
-    host = ""
-    n = len(sys.argv) #intakes compiling statement as an array
-    if n == 2: #if the input recieves an ip
-        host = sys.argv[1]
-        print (host) #print ip inputted
-else:
-    print ("Invalid argument")
-    exit()
-
-'''
 
 s = socket.socket()
-
 
 
 print('Waiting for connection')
@@ -42,17 +29,6 @@ except socket.error as e:
     print(str(e))
     print("Cannot connect to server")
 
-'''
-Response = s.recv(1024)
-while True:
-    Input = input('Say Something: ')
-    s.send(str.encode(Input))
-    Response = s.recv(1024)
-    print(Response.decode('utf-8'))
-
-s.close()
-
-'''
 
 
 shutDown = 0
@@ -69,15 +45,12 @@ while shutDown == 0: #while user does not request shutdown
           s.close()
 
 
-
-
         if userInput == "SHUTDOWN":
           s.send(userInput.encode()) #sending input to server
           data = s.recv(1024).decode() #recieve sent input
           print("Output: " + data) #outputting response
           s.close()
           sys.exit()
-
 
 
 
@@ -93,8 +66,6 @@ while shutDown == 0: #while user does not request shutdown
     else:
         print("Input handling went wrong! try restart client connection!")
        
-
-
 
 
 s.close() #close socket connection

@@ -1,10 +1,9 @@
 #Author/Collaborators: Taylor Williams, Michelle Sroka
 #Creation Date: 02/03/2023
-#Last Modification Date: 03/26/2023
+#Last Modification Date: 03/29/2023
 #Purpose: This is the Server program for a Online Stock Trading System. This Server program is
 #expected to communicate with an aligining Client program using TCP sockets. One active
 #client should be allowed to connect to the server.
-
 
 
 import socket
@@ -17,12 +16,6 @@ import sqlite3 #only server should handle SQL statements
 clientNames = []
 clientAddresses = []
 
-
-
-#s = socket.socket()
-#host = '127.0.0.1'
-#port = 1233
-#ThreadCount = 0
 
 #MAIN
 ip = ""
@@ -48,7 +41,6 @@ CREATE TABLE IF NOT EXISTS "Users"
 
 
 
-
 #Stock table creation
 dbActivity.execute("""
 CREATE TABLE IF NOT EXISTS "Stocks"
@@ -61,7 +53,6 @@ CREATE TABLE IF NOT EXISTS "Stocks"
     FOREIGN KEY ("user_id") REFERENCES "Users" ("ID")          
 );
 """)
-
 
 
 
@@ -81,7 +72,6 @@ if stockRecord.fetchone() is None: #Creates default stock records
 
 
 
-
 try:
     #bind socket to a port on the s (local host)
     s.bind((ip,SERVER_PORT))
@@ -89,51 +79,19 @@ except socket.error as e:
     print(str(e))
 
 
-
-
-'''
-try:
-    s.bind((host, port))
-except socket.error as e:
-    print(str(e))
-
-'''
-
 print('Waitiing for a Connection..')
 s.listen(5)
 
-'''
-def threaded_client(connection):
-    connection.send(str.encode('Welcome to the Servern'))
-    while True:
-        data = connection.recv(2048)
-        reply = 'Server Says: ' + data.decode('utf-8')
-        if not data:
-            break
-        connection.sendall(str.encode(reply))
-    connection.close()
-
-'''
 
 def threaded_client(connection):
     while True:
-            #accepts new connection
-            #connection, address = s.accept()
-            #print('connected to: '+address[0]+':'+str(address[1]))
-
-
-            #"utf-8"
             data = connection.recv(1024).decode() #buffer rate & decoding
             print(data)
 
-
             if not data:
-                #lock released on exit
-                #print_lock.release()
                 connection.send("Did not receive any data!".encode())
                 break
-            #data = data.decode("utf-8")
-
+           
 
             userRequest = data.split(" ")
             command = userRequest[0]
@@ -143,12 +101,11 @@ def threaded_client(connection):
                 #command = userRequest[0] #grabs LOGIN command
                 username = userRequest[1] #intakes username if inputted correctly
                 password = userRequest[2] #intakes password if inputted correctly
-
+                
 
                 clientNames.append(username) #adds client to list on connection
                 clientAddresses.append(address[0]+':'+str(address[1])) #adds client address to list on connection
                            
-
 
                 if len(userRequest) < 3: #checks for proper formatting and values for the BUY command
                     connection.send("403 message format error".encode())
@@ -166,8 +123,6 @@ def threaded_client(connection):
                     continue
 
 
-
-
                 elif temp is not None:
                     login = True
                     loginMessage = "200 OK"
@@ -177,21 +132,25 @@ def threaded_client(connection):
 
 
 
-
                 while login == True: #starting new thread for valid client
                         #data sent from client
-                        clientdata = connection.recv(1024) #buffer rate
-                        clientdata = clientdata.decode("utf-8")
+                        clientdata = connection.recv(1024).decode() #buffer rate
+                        #clientdata = clientdata.decode("utf-8") #caused unicode error when testing
                         print(clientdata)
-                       
 
+                        if not clientdata:
+                            #lock released on exit
+                            #print_lock.release()
+                            connection.send("Did not receive any data!".encode())
+                            break
+    
 
                         #FUNCTION FOR LOGOUT
                         if(clientdata == "LOGOUT"):
                             #login == False
                             connection.send("200 OK".encode())
                             connection.close()
-
+                            break
 
                             #A user is not allowed to send BUY, SELL, LIST, BALANCE, and SHUTDOWN commands after logout,
                             # but it can still send the QUIT commands.
@@ -214,34 +173,35 @@ def threaded_client(connection):
                                 continue 
 
                         #FUNCTION FOR LOOKUP
-                        if (clientdata == "LOOKUP"):
-                                #Display the complete stock record for the logged in user MIGHT NEED TO TAKE THIS OUT
-                                stockActivity = dbActivity.execute("SELECT * FROM Stocks") #Finding all stock infromation within stock table
-                                stocks = stockActivity.fetchone() #fetch stock values
-                                lookup_List = "200 OK \n The list of records in the Stocks database for " + username
-                                while stocks is not None: #loop through all stock records within database
-                                    lookup_List += str(stocks[0]) + " " +stocks[1] + " " + stocks[2] + " " + str(stocks[3]) + " " + stocks[4] + "\n"
-                                    stocks = stockActivity.fetchone()
-                                connection.send(lookup_List.encode())
+                        if  (clientdata == "LOOKUP"):
+                                #get user's ID to check their information in the stocks table
+                                stockActivityID = dbActivity.execute("SELECT * FROM Users WHERE user_name = '"+username+"' ")
+                                userId = stockActivityID.fetchone()
+                                ID = userId[0] #locate the id of the user in Users table
+                    
 
-                                #if the client enters more than just LOOKUP
-                                if (clientdata[1] != None):
-                                    client_Stock = clientdata[1] #the 2nd index of what the user inputted is recognized as stock symbol
-                                    stockActivity = dbActivity.execute("SELECT * FROM Stocks Where stock_symbol '"+client_Stock+"' ")
-                                    get_Stock = stockActivity.fetchone()
+                                connection.send("Enter a stock (symbol): ".encode())
+                                client_Stock = connection.recv(1024).decode()
+                                print(client_Stock)
 
-                                    #if symbol does not exist in the table for the user
-                                    if(client_Stock is not get_Stock): #might need to change to for loop???
-                                         #Error message
-                                         connection.send("404 Your search did not match any records".encode())
-                                         
-                                    else: 
-                                      #Display user's stock symbol entered and the balance with it    
-                                      lookup_List2 = "200 OK\n Found match\n" + client_Stock + " " + get_Stock[4] + "\n"  
+                                #get user's stock information based on the stock symbol they entered
+                                stockActivityuserSt = dbActivity.execute("SELECT * FROM Stocks WHERE stock_symbol = '"+client_Stock+"' AND user_id = '"+str(ID)+"'") #user id in users table is int but in stocks table its text so convert
+                                get_Stock = stockActivityuserSt.fetchone()
+
+                                #if symbol does not exist in the table for the user
+                                if(get_Stock is None): #might need to change to for loop???
+                                    #Error message
+                                    connection.send("404 Your search did not match any records".encode())
+                                    
+                                else:
+                                    lookup_List2 = "200 OK\n Found match\n"
+                                    while get_Stock is not None: #loop through all stock records for the user that match the stock symbol
+                                        #Display user's stock symbol and the record that matches 
+                                        lookup_List2 += client_Stock + " " + get_Stock[2] + " " +str(get_Stock[3]) + "\n"
+                                        get_Stock = stockActivityuserSt.fetchone()
+                                    connection.send(lookup_List2.encode())
 
 
-
-                                
                     
                         #FUNCTION FOR SHUTDOWN - ONLY ROOT USER IS AUTHORIZED
                         if (clientdata == "SHUTDOWN"):
@@ -250,15 +210,16 @@ def threaded_client(connection):
                                     sendMessage = "200 OK"
                                     connection.send(sendMessage.encode()) #send message to client
                                     connection.close()
+                                    s.close()
                                     sys.exit()
-
+                                
 
                                 else:
                                     connection.send("Only root user is authorized to SHUTDOWN! Denied!".encode())
                                     continue
 
-
-                       
+                    
+                       #FUNCTION FOR BALANCE
                         elif (clientdata == "BALANCE"):#display the USD balance for user 1
                                 activeUserCheck = dbActivity.execute("SELECT * FROM Users WHERE user_name = '" + username + "'")
                                 activeUser = activeUserCheck.fetchone()
@@ -266,8 +227,7 @@ def threaded_client(connection):
                                 connection.send(balanceMessage.encode())
 
 
-
-
+                        #FUNCTION FOR LIST
                         elif (clientdata == "LIST"):#List all records in the Stocks table/file
                                 stockActivity = dbActivity.execute("SELECT * FROM Stocks") #Finding all stock infromation within stock table
                                 stocks = stockActivity.fetchone() #fetch stock values
@@ -277,6 +237,7 @@ def threaded_client(connection):
                                     stocks = stockActivity.fetchone()
                                 connection.send(list.encode())
                        
+                       #FUNCTION FOR BUY
                         elif (command == "BUY"):
                                 """
                                 -have user enter the stock_symbol, stock_name, and the stock_balance amount they wish to purchase
@@ -320,7 +281,7 @@ def threaded_client(connection):
                                     connection.send(confirm.encode())
 
 
-   
+                
                 if (command == "SHUTDOWN"): #if user tries to enter shutdown without being logged in
                     connection.send("Only root user is authorized to SHUTDOWN! Denied!".encode())
 
@@ -330,14 +291,12 @@ def threaded_client(connection):
                     connection.send("This command is not allowed! Make sure you are logged into the server first!".encode())
                    
 
-
                 else: #If user enters invalid userID or password information
                     connection.send("403 Wrong UserID or Password123".encode())
-                    #print_lock.release()
-                    #continue
 
-
+                  
     connection.close()
+    
     
 
 while True:
@@ -346,4 +305,6 @@ while True:
     start_new_thread(threaded_client, (Client, ))
     ThreadCount += 1
     print('Thread Number: ' + str(ThreadCount))
+    
+
 s.close()
